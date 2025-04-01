@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strings"
 
 	"git.huggins.io/git-io/internal/page"
 	"github.com/google/go-github/github"
@@ -23,9 +24,8 @@ func main() {
 	}
 
 	for _, repo := range repos {
-		log.Println("Processing repository:", repo.GetName(), "(language:", repo.GetLanguage(), ")")
-		// TODO: language specfic config for golang meta
-		html := page.GenericRedirect(repo.GetHTMLURL())
+		log.Println("Rendering ", repo.GetName(), "(language:", repo.GetLanguage(), ")")
+		html := page.GenericRedirect(repo.GetHTMLURL(), strings.ToLower(repo.GetLanguage()) == "go")
 
 		if err := os.Mkdir(fmt.Sprintf("_output/%s", repo.GetName()), 0755); err != nil {
 			log.Fatalln(err)
@@ -43,5 +43,18 @@ func main() {
 		}
 	}
 
-	log.Println("HTML generated")
+	log.Println("Repository pages generated")
+	log.Println("Copying individual assets")
+
+	robots := "User-agent: *\nDisallow: /"
+	f, err := os.Create("_output/robots.txt")
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	defer f.Close()
+
+	if _, err := f.WriteString(robots); err != nil {
+		log.Fatalln(err)
+	}
 }

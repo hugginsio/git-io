@@ -23,7 +23,7 @@ func stylesheet() gomponents.Node {
 	return gomponents.Raw(w.String())
 }
 
-func GenericRedirect(url string) gomponents.Node {
+func GenericRedirect(url string, goImport bool) gomponents.Node {
 	return components.HTML5(components.HTML5Props{
 		Language: "en-US",
 		Title:    "Redirecting...",
@@ -33,6 +33,10 @@ func GenericRedirect(url string) gomponents.Node {
 			gomponents.If(
 				url != "#",
 				html.Meta(gomponents.Attr("http-equiv", "refresh"), html.Content(fmt.Sprintf("0; url='%s'", url))),
+			),
+			gomponents.If(
+				goImport,
+				html.Meta(gomponents.Attr("go-import"), html.Content(fmt.Sprintf("git vcs %s", url))),
 			),
 		},
 		Body: []gomponents.Node{

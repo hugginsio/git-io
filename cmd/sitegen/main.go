@@ -25,7 +25,7 @@ func main() {
 	for _, repo := range repos {
 		log.Println("Rendering ", repo.GetName(), "(language:", repo.GetLanguage(), ")")
 
-		html := page.GenericRedirect(repo.GetHTMLURL(), strings.ToLower(repo.GetLanguage()) == "go")
+		html := page.GenericRedirect(repo.GetHTMLURL(), repo.GetName(), strings.ToLower(repo.GetLanguage()) == "go")
 		fsio.Directory(fmt.Sprintf("_output/%s", repo.GetName()), 0755)
 
 		// typical
@@ -57,7 +57,7 @@ func main() {
 		log.Fatalln(err)
 	}
 
-	index := page.GenericRedirect("https://github.com/hugginsio", false)
+	index := page.GenericRedirect("https://github.com/hugginsio", "", false)
 	f = fsio.File("_output/index.html")
 	defer f.Close()
 

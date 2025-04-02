@@ -23,7 +23,7 @@ func stylesheet() gomponents.Node {
 	return gomponents.Raw(w.String())
 }
 
-func GenericRedirect(url string, goImport bool) gomponents.Node {
+func GenericRedirect(url string, repository string, goImport bool) gomponents.Node {
 	return components.HTML5(components.HTML5Props{
 		Language: "en-US",
 		Title:    "Redirecting...",
@@ -36,7 +36,7 @@ func GenericRedirect(url string, goImport bool) gomponents.Node {
 			),
 			gomponents.If(
 				goImport,
-				html.Meta(gomponents.Attr("go-import"), html.Content(fmt.Sprintf("git vcs %s", url))),
+				html.Meta(gomponents.Attr("go-import"), html.Content(fmt.Sprintf("git.huggins.io/%s git %s", repository, url))),
 			),
 		},
 		Body: []gomponents.Node{

@@ -30,12 +30,12 @@ func stylesheet() gomponents.Node {
 func RepositoryRedirect(repo github.Repository) gomponents.Node {
 	head := []gomponents.Node{
 		html.Meta(
-			gomponents.Attr("go-import"),
+			html.Name("go-import"),
 			html.Content(fmt.Sprintf("git.huggins.io/%s git %s", repo.GetName(), repo.GetHTMLURL())),
 		),
 		gomponents.If(repo.GetLanguage() == "Go",
 			html.Meta(
-				gomponents.Attr("go-source"),
+				html.Name("go-source"),
 				// 4d63.com/vangen https://github.com/leighmcculloch/vangen https://github.com/leighmcculloch/vangen/tree/master{/dir} https://github.com/leighmcculloch/vangen/blob/master{/dir}/{file}#L{line}
 				html.Content(fmt.Sprintf(
 					"git.huggins.io/%s %s/tree/%s{/dir} %s/blob/%s{/dir}/{file}#L{line}",
@@ -62,6 +62,7 @@ func RedirectPage(head []gomponents.Node, url string) gomponents.Node {
 				url != "#",
 				html.Meta(gomponents.Attr("http-equiv", "refresh"), html.Content(fmt.Sprintf("0; url='%s'", url))),
 			),
+			html.StyleEl(stylesheet()),
 		),
 		Body: []gomponents.Node{
 			html.Div(html.Class("container"),

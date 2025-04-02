@@ -1,0 +1,18 @@
+# https://taskfile.dev
+# yaml-language-server: $schema=https://taskfile.dev/schema.json
+
+version: 3
+
+tasks:
+  default:
+    cmds:
+      - task -l
+      - dagger functions
+  clean:
+    desc: remove generated files
+    cmd: rm -rf _output
+  sitegen:
+    desc: run cmd/sitegen
+    deps:
+      - clean
+    cmd: dagger call sitegen export --path _output

@@ -4,9 +4,9 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"os"
 	"strings"
 
+	"git.huggins.io/git-io/internal/fsio"
 	"git.huggins.io/git-io/internal/page"
 	"github.com/google/go-github/github"
 )
@@ -19,42 +19,49 @@ func main() {
 		log.Fatalln(err)
 	}
 
-	if err := os.Mkdir("_output", 0755); err != nil {
-		log.Fatalln(err)
-	}
+	fsio.Delete("_output")
+	fsio.Directory("_output", 0755)
 
 	for _, repo := range repos {
 		log.Println("Rendering ", repo.GetName(), "(language:", repo.GetLanguage(), ")")
+
 		html := page.GenericRedirect(repo.GetHTMLURL(), strings.ToLower(repo.GetLanguage()) == "go")
+		fsio.Directory(fmt.Sprintf("_output/%s", repo.GetName()), 0755)
 
-		if err := os.Mkdir(fmt.Sprintf("_output/%s", repo.GetName()), 0755); err != nil {
-			log.Fatalln(err)
-		}
-
-		f, err := os.Create(fmt.Sprintf("_output/%s/index.html", repo.GetName()))
-		if err != nil {
-			log.Fatalln(err)
-		}
-
+		// typical
+		f := fsio.File(fmt.Sprintf("_output/%s.html", repo.GetName()))
 		defer f.Close()
 
 		if err := html.Render(f); err != nil {
 			log.Fatalln(err)
 		}
+
+		// pretty
+		f = fsio.File(fmt.Sprintf("_output/%s/index.html", repo.GetName()))
+		defer f.Close()
+
+		if err := html.Render(f); err != nil {
+			log.Fatalln(err)
+		}
+
 	}
 
 	log.Println("Repository pages generated")
 	log.Println("Copying individual assets")
 
 	robots := "User-agent: *\nDisallow: /"
-	f, err := os.Create("_output/robots.txt")
-	if err != nil {
-		log.Fatalln(err)
-	}
-
+	f := fsio.File("_output/robots.txt")
 	defer f.Close()
 
 	if _, err := f.WriteString(robots); err != nil {
+		log.Fatalln(err)
+	}
+
+	index := page.GenericRedirect("https://github.com/hugginsio", false)
+	f = fsio.File("_output/index.html")
+	defer f.Close()
+
+	if err := index.Render(f); err != nil {
 		log.Fatalln(err)
 	}
 }

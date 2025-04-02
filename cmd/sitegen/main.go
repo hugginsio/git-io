@@ -7,7 +7,6 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"strings"
 
 	"git.huggins.io/git-io/internal/fsio"
 	"git.huggins.io/git-io/internal/page"
@@ -28,7 +27,7 @@ func main() {
 	for _, repo := range repos {
 		log.Println("Rendering ", repo.GetName(), "(language:", repo.GetLanguage(), ")")
 
-		html := page.GenericRedirect(repo.GetHTMLURL(), repo.GetName(), strings.ToLower(repo.GetLanguage()) == "go")
+		html := page.RepositoryRedirect(*repo)
 		fsio.Directory(fmt.Sprintf("_output/%s", repo.GetName()), 0755)
 
 		// typical
@@ -60,7 +59,7 @@ func main() {
 		log.Fatalln(err)
 	}
 
-	index := page.GenericRedirect("https://github.com/hugginsio", "", false)
+	index := page.UrlRedirect("https://github.com/hugginsio")
 	f = fsio.File("_output/index.html")
 	defer f.Close()
 

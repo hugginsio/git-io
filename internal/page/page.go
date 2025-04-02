@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/google/go-github/github"
 	"github.com/tdewolff/minify/v2"
 	"github.com/tdewolff/minify/v2/css"
 	"maragu.dev/gomponents"
@@ -26,22 +27,42 @@ func stylesheet() gomponents.Node {
 	return gomponents.Raw(w.String())
 }
 
-func GenericRedirect(url string, repository string, goImport bool) gomponents.Node {
+func RepositoryRedirect(repo github.Repository) gomponents.Node {
+	head := []gomponents.Node{
+		html.Meta(
+			gomponents.Attr("go-import"),
+			html.Content(fmt.Sprintf("git.huggins.io/%s git %s", repo.GetName(), repo.GetHTMLURL())),
+		),
+		gomponents.If(repo.GetLanguage() == "Go",
+			html.Meta(
+				gomponents.Attr("go-source"),
+				// 4d63.com/vangen https://github.com/leighmcculloch/vangen https://github.com/leighmcculloch/vangen/tree/master{/dir} https://github.com/leighmcculloch/vangen/blob/master{/dir}/{file}#L{line}
+				html.Content(fmt.Sprintf(
+					"git.huggins.io/%s %s/tree/%s{/dir} %s/blob/%s{/dir}/{file}#L{line}",
+					repo.GetName(), repo.GetHTMLURL(), repo.GetDefaultBranch(), repo.GetHTMLURL(), repo.GetDefaultBranch(),
+				)),
+			),
+		),
+	}
+
+	return RedirectPage(head, repo.GetHTMLURL())
+}
+
+func UrlRedirect(url string) gomponents.Node {
+	return RedirectPage(nil, url)
+}
+
+func RedirectPage(head []gomponents.Node, url string) gomponents.Node {
 	return components.HTML5(components.HTML5Props{
 		Language: "en-US",
 		Title:    "Redirecting...",
-		Head: []gomponents.Node{
-			html.StyleEl(stylesheet()),
-			// NOTE: only use meta refresh for known URLs.
+		Head: append(
+			head,
 			gomponents.If(
 				url != "#",
 				html.Meta(gomponents.Attr("http-equiv", "refresh"), html.Content(fmt.Sprintf("0; url='%s'", url))),
 			),
-			gomponents.If(
-				goImport,
-				html.Meta(gomponents.Attr("go-import"), html.Content(fmt.Sprintf("git.huggins.io/%s git %s", repository, url))),
-			),
-		},
+		),
 		Body: []gomponents.Node{
 			html.Div(html.Class("container"),
 				html.Span(html.A(html.Href(url), gomponents.Text("Click here if you are not redirected."))),

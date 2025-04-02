@@ -8,7 +8,7 @@ import (
 type GitIo struct{}
 
 // Return the build environment container.
-func (m *GitIo) BuildEnv(
+func (m *GitIo) buildEnv(
 	ctx context.Context,
 	// +defaultPath="/"
 	source *dagger.Directory,

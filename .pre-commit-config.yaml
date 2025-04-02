@@ -1,0 +1,11 @@
+# https://pre-commit.com
+# yaml-language-server: $schema=https://json.schemastore.org/pre-commit-config.json
+
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v3.2.0
+    hooks:
+      - id: check-merge-conflict
+      - id: check-yaml
+      - id: end-of-file-fixer
+      - id: trailing-whitespace

@@ -1,3 +1,6 @@
+// Copyright 2025 Kyle Huggins
+// SPDX-License-Identifier: BSD-3-Clause
+
 // Package fsio wraps basic filesystem IO so that I don't have to deal with errors in `cmd/sitegen`.
 package fsio
 

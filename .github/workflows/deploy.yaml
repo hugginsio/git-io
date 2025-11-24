@@ -14,7 +14,7 @@ jobs:
       name: Cloudflare Pages
       url: "${{ steps.deploy.outputs.deployment-url }}"
     steps:
-      - uses: "actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8" # 5.0.0
+      - uses: "actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3" # 6.0.0
       - uses: "dagger/dagger-for-github@d913e70051faf3b907d4dd96ef1161083c88c644" # 8.2.0
         with:
           call: "sitegen export --path _output/"
